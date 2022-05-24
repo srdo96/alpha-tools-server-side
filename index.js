@@ -34,8 +34,13 @@ async function run() {
 
     app.patch("/orders", async (req, res) => {
       const order = req.body;
-      // console.log(order);
       const result = await orderCollection.insertOne(order);
+      res.send(result);
+    });
+
+    app.get("/orders/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await orderCollection.find({ userEmail: email }).toArray();
       res.send(result);
     });
   } finally {
