@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
-console.log(process.env);
 const port = process.env.PORT || 5000;
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_USER_PASS}@cluster0.0lwbw.mongodb.net/?retryWrites=true&w=majority`;
@@ -20,6 +20,14 @@ async function run() {
     // GET tools API
     app.get("/tools", async (req, res) => {
       const result = await toolCollection.find().toArray();
+      res.send(result);
+    });
+
+    // GET Dynamic Tools
+    app.get("/tools/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await toolCollection.findOne(query);
       res.send(result);
     });
   } finally {
