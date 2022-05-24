@@ -16,6 +16,7 @@ async function run() {
   try {
     await client.connect();
     const toolCollection = client.db("alpha_tools").collection("tools");
+    const orderCollection = client.db("alpha_tools").collection("orders");
 
     // GET tools API
     app.get("/tools", async (req, res) => {
@@ -28,6 +29,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await toolCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.patch("/orders", async (req, res) => {
+      const order = req.body;
+      // console.log(order);
+      const result = await orderCollection.insertOne(order);
       res.send(result);
     });
   } finally {
