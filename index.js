@@ -19,6 +19,8 @@ async function run() {
     const toolCollection = client.db("alpha_tools").collection("tools");
     const orderCollection = client.db("alpha_tools").collection("orders");
     const paymentCollection = client.db("alpha_tools").collection("payments");
+    const reviewCollection = client.db("alpha_tools").collection("reviews");
+    const userCollection = client.db("alpha_tools").collection("users");
 
     // stripe payment intent
     app.post("/create-payment-intent", async (req, res) => {
@@ -67,7 +69,7 @@ async function run() {
           transactionId: payment.transactionId,
         },
       };
-      const result = await orderCollection.insertOne(payment);
+      const result = await paymentCollection.insertOne(payment);
       const updateOrder = await orderCollection.updateOne(query, updatedDoc);
       res.send(updatedDoc);
     });
@@ -90,6 +92,33 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewCollection.find({}).toArray();
+      console.log(result);
+      res.send(result);
+    });
+
+    app.patch("/add-reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
+      const user = req.body;
+      console.log(user);
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
       res.send(result);
     });
   } finally {
