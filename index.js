@@ -18,6 +18,7 @@ async function run() {
     await client.connect();
     const toolCollection = client.db("alpha_tools").collection("tools");
     const orderCollection = client.db("alpha_tools").collection("orders");
+    const paymentCollection = client.db("alpha_tools").collection("payments");
 
     // stripe payment intent
     app.post("/create-payment-intent", async (req, res) => {
@@ -54,6 +55,21 @@ async function run() {
       const order = req.body;
       const result = await orderCollection.insertOne(order);
       res.send(result);
+    });
+
+    app.patch("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body.payment;
+      const query = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: "paid",
+          transactionId: payment.transactionId,
+        },
+      };
+      const result = await orderCollection.insertOne(payment);
+      const updateOrder = await orderCollection.updateOne(query, updatedDoc);
+      res.send(updatedDoc);
     });
 
     app.get("/order/:id", async (req, res) => {
