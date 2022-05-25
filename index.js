@@ -107,11 +107,18 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      console.log(query);
+      const result = await userCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email);
       const user = req.body;
-      console.log(user);
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
