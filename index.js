@@ -44,6 +44,12 @@ async function run() {
       const result = await toolCollection.find().toArray();
       res.send(result);
     });
+    app.patch("/tools", async (req, res) => {
+      const product = req.body;
+      console.log(product);
+      const result = await toolCollection.insertOne(product);
+      res.send(result);
+    });
 
     // GET Dynamic Tools
     app.get("/tools/:id", async (req, res) => {
@@ -105,7 +111,6 @@ async function run() {
       const email = req.params.email;
       const user = await userCollection.findOne({ email });
       const isAdmin = user.role === "admin";
-      console.log(isAdmin);
       res.send({ admin: isAdmin });
     });
 
