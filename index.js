@@ -44,6 +44,16 @@ async function run() {
       const result = await toolCollection.find().toArray();
       res.send(result);
     });
+
+    app.delete("/tools/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      console.log(query);
+      const result = await toolCollection.deleteOne(query);
+      res.send(result);
+    });
+
     app.patch("/tools", async (req, res) => {
       const product = req.body;
       console.log(product);
