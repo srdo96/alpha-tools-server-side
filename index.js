@@ -3,6 +3,7 @@ const cors = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -87,13 +88,29 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const updatedDoc = {
         $set: {
-          status: "paid",
+          status: "pending",
           transactionId: payment.transactionId,
         },
       };
       const result = await paymentCollection.insertOne(payment);
       const updateOrder = await orderCollection.updateOne(query, updatedDoc);
       res.send(updatedDoc);
+    });
+
+    app.put("/order/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { status: "shipped" },
+      };
+      const result = await orderCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
 
     app.get("/order/:id", async (req, res) => {
@@ -178,6 +195,12 @@ async function run() {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "6h" }
+      );
 
       res.send(result);
     });
