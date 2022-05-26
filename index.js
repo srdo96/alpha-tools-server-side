@@ -120,6 +120,18 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.delete("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
+
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
@@ -127,8 +139,21 @@ async function run() {
       res.send(result);
     });
 
-    app.put("/user/:email", async (req, res) => {
+    app.put("/user/admin/:email", async (req, res) => {
       const email = req.params.email;
+      const filter = { email: email };
+      console.log(filter);
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params;
+      console.log(email);
       const user = req.body;
       const filter = { email: email };
       const options = { upsert: true };
