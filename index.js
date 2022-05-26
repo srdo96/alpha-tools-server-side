@@ -97,8 +97,16 @@ async function run() {
 
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollection.find({}).toArray();
-      console.log(result);
       res.send(result);
+    });
+
+    // check admin
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email });
+      const isAdmin = user.role === "admin";
+      console.log(isAdmin);
+      res.send({ admin: isAdmin });
     });
 
     app.patch("/add-reviews", async (req, res) => {
@@ -110,9 +118,7 @@ async function run() {
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
-      console.log(query);
       const result = await userCollection.findOne(query);
-      console.log(result);
       res.send(result);
     });
 
