@@ -48,16 +48,16 @@ async function run() {
 
     app.delete("/tools/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+
       const query = { _id: ObjectId(id) };
-      console.log(query);
+
       const result = await toolCollection.deleteOne(query);
       res.send(result);
     });
 
     app.patch("/tools", async (req, res) => {
       const product = req.body;
-      console.log(product);
+
       const result = await toolCollection.insertOne(product);
       res.send(result);
     });
@@ -72,7 +72,7 @@ async function run() {
 
     app.get("/orders", async (req, res) => {
       const result = await orderCollection.find().toArray();
-      console.log(result);
+
       res.send(result);
     });
 
@@ -117,7 +117,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await orderCollection.findOne(query);
-      // console.log(result);
+
       res.send(result);
     });
 
@@ -175,20 +175,20 @@ async function run() {
     app.put("/user/admin/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
-      console.log(filter);
+
       const updateDoc = {
         $set: { role: "admin" },
       };
       const result = await userCollection.updateOne(filter, updateDoc);
-      console.log(result);
+
       res.send(result);
     });
 
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email);
+
       const user = req.body;
-      console.log(user);
+
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
@@ -196,11 +196,11 @@ async function run() {
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
 
-      const token = jwt.sign(
-        { email: email },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "6h" }
-      );
+      // const token = jwt.sign(
+      //   { email: email },
+      //   process.env.ACCESS_TOKEN_SECRET,
+      //   { expiresIn: "6h" }
+      // );
 
       res.send(result);
     });
