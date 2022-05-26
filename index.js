@@ -59,6 +59,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/orders", async (req, res) => {
+      const result = await orderCollection.find().toArray();
+      console.log(result);
+      res.send(result);
+    });
+
     app.patch("/orders", async (req, res) => {
       const order = req.body;
       const result = await orderCollection.insertOne(order);
@@ -110,7 +116,7 @@ async function run() {
     app.get("/admin/:email", async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email });
-      const isAdmin = user.role === "admin";
+      const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
 
@@ -152,9 +158,10 @@ async function run() {
     });
 
     app.put("/user/:email", async (req, res) => {
-      const email = req.params;
+      const email = req.params.email;
       console.log(email);
       const user = req.body;
+      console.log(user);
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
